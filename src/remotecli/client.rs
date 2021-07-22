@@ -21,8 +21,8 @@ pub async fn client_run(rc_opts: RemoteCommandOptions) -> Result<(), Box<dyn std
     });
 
     let response = client.shell(request).await?;
-
-    println!("RESPONSE={:?}", response);
+    let output: String = response.into_inner().output;
+    println!("Output\n{}", output);
 
     Ok(())
 }

@@ -38,6 +38,7 @@ impl RemoteCli for Cli {
             .spawn()
             .expect("failed to execute child process");
 
+        // TODO: need to add handling command errors
         let output = process
             .wait_with_output()
             .expect("failed to wait on child process");
