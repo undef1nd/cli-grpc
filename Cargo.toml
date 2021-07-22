@@ -2,6 +2,7 @@
 name = "cli-grpc-tonic-blocking"
 version = "0.1.0"
 edition = "2018"
+description = "https://tjtelan.com/blog/lets-build-a-single-binary-grpc-server-client-with-rust-in-2020/"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
