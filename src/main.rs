@@ -1,23 +1,6 @@
+pub mod remotecli;
+
 use structopt::StructOpt;
-
-// This is the main arguments structure that we'll parse from
-#[derive(StructOpt, Debug)]
-#[structopt(name = "remotecli")]
-struct ApplicationArguments {
-    #[structopt(flatten)]
-    pub subcommand: SubCommand,
-}
-
-// These are the only valid values for our subcommands
-#[derive(Debug, StructOpt)]
-pub enum SubCommand {
-    /// Start the remote command gRPC server
-    #[structopt(name = "server")]
-    StartServer(ServerOptions),
-    /// Send a remote command to the gRPC server
-    #[structopt(setting = structopt::clap::AppSettings::TrailingVarArg)]
-    Run(RemoteCommandOptions),
-}
 
 // These are the options used by the `server` subcommand
 #[derive(Debug, StructOpt)]
@@ -37,6 +20,24 @@ pub struct RemoteCommandOptions {
     pub command: Vec<String>,
 }
 
+// These are the only valid values for our subcommands
+#[derive(Debug, StructOpt)]
+pub enum SubCommand {
+    /// Start the remote command gRPC server
+    #[structopt(name = "server")]
+    StartServer(ServerOptions),
+    /// Send a remote command to the gRPC server
+    #[structopt(setting = structopt::clap::AppSettings::TrailingVarArg)]
+    Run(RemoteCommandOptions),
+}
+
+// This is the main arguments structure that we'll parse from
+#[derive(StructOpt, Debug)]
+#[structopt(name = "remotecli")]
+struct ApplicationArguments {
+    #[structopt(flatten)]
+    pub subcommand: SubCommand,
+}
 
 /// Examples:
 ///
@@ -47,16 +48,21 @@ pub struct RemoteCommandOptions {
 /// cargo run -- run ls -al
 /// cargo run -- run -h
 /// cargo run -- blahblahblah
-
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = ApplicationArguments::from_args();
+
     match args.subcommand {
         SubCommand::StartServer(opts) => {
-            println!("Start the server on : {:?}", opts.server_listen_addr);
+            println!("Start the server on: {:?}", opts.server_listen_addr);
+            remotecli::server::start_server(opts).await?;
         }
         SubCommand::Run(rc_opts) => {
             println!("Run command: '{:?}'", rc_opts.command);
+
+
         }
     }
+
     Ok(())
 }
